@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (groundLayer == (1 << collision.gameObject.layer))
+        if ((groundLayer & (1 << collision.gameObject.layer)) != 0)
             _canJump = true;
     }
 

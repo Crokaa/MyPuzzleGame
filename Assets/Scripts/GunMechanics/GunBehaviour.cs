@@ -39,7 +39,7 @@ public class GunBehaviour : MonoBehaviour
     private void HandleShooting()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
-            // TODO: Handle the shooting
-            Debug.Log("pewpew");
+            Instantiate(_bulletPrefab, _spawnPoint.transform.position, transform.rotation);
+            
     }
 }
