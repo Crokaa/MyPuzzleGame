@@ -14,8 +14,8 @@ TagManager:
   - Ground
   - PlayerProjectile
   - Wall
-  - 
-  - 
+  - ColorChange
+  - GravityChange
   - 
   - 
   - 

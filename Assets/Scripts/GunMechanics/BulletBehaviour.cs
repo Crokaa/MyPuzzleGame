@@ -5,7 +5,9 @@ public class BulletBehaviour : MonoBehaviour
     [SerializeField] private float _speed = 15;
     [SerializeField] private float _destroyTimer = 5;
     [SerializeField] private LayerMask _layerDestroyBullet;
+    [SerializeField] private LayerMask _layerEnvironmentChange;
     private Rigidbody2D _rb;
+
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -29,5 +31,8 @@ public class BulletBehaviour : MonoBehaviour
     {
         if ((_layerDestroyBullet & (1 << collision.gameObject.layer)) != 0)
             Destroy(gameObject);
+
+        if ((_layerEnvironmentChange & (1 << collision.gameObject.layer)) != 0)
+            collision.GetComponent<IChangeableWall>().ApplyChange();
     }
 }

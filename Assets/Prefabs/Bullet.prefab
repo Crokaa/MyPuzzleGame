@@ -172,4 +172,7 @@ MonoBehaviour:
   _destroyTimer: 5
   _layerDestroyBullet:
     serializedVersion: 2
-    m_Bits: 320
+    m_Bits: 1856
+  _layerEnvironmentChange:
+    serializedVersion: 2
+    m_Bits: 1536
