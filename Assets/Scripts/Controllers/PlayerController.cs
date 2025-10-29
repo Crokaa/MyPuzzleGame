@@ -5,7 +5,7 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
-    [SerializeField] LayerMask _groundLayer;
+    [SerializeField] LayerMask _jumpableLayer;
     [SerializeField] private float _moveDamp;
     [SerializeField] private float _stopDamp;
     private bool IsMoving
@@ -45,7 +45,6 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && _canJump)
         {
-            Debug.Log("saltei");
             _jump = true;
         }
 
@@ -54,8 +53,7 @@ public class PlayerController : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collision)
     {
         // Grounded check has to change since the player now changes gravity
-        //TODO: Jump from Walls / Ground
-        if ((_groundLayer & (1 << collision.gameObject.layer)) != 0)
+        if ((_jumpableLayer & (1 << collision.gameObject.layer)) != 0)
             _canJump = true;
 
     }
@@ -63,7 +61,7 @@ public class PlayerController : MonoBehaviour
     void OnTriggerExit2D(Collider2D collision)
     {
         // Grounded check has to change since the player now changes gravity
-        if ((_groundLayer & (1 << collision.gameObject.layer)) != 0)
+        if ((_jumpableLayer & (1 << collision.gameObject.layer)) != 0)
         {
             _canJump = false;
             _jump = false;
@@ -91,10 +89,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    internal void ChangeGravity(Vector2 currentForce)
+    public void ChangeGravity(Vector2 currentForce)
     {
         Physics2D.gravity = currentForce * GRAVITY;
         _currentHorizontal = Quaternion.AngleAxis(90, new Vector3(0, 0, 1)) * currentForce;
         transform.right = Quaternion.AngleAxis(90, new Vector3(0, 0, 1)) * currentForce;
+    }
+
+    public void ChangeColor(Color color)
+    {
+        GetComponent<SpriteRenderer>().color = color;
     }
 }

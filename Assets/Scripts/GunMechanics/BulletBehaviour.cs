@@ -33,6 +33,6 @@ public class BulletBehaviour : MonoBehaviour
             Destroy(gameObject);
 
         if ((_layerEnvironmentChange & (1 << collision.gameObject.layer)) != 0)
-            collision.GetComponent<IChangeableWall>().ApplyChange();
+            collision.GetComponent<IChangeableBlock>().ApplyChange();
     }
 }
