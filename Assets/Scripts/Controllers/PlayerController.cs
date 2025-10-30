@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
 
         }
     }
+    private LayerMask _initialExcludeLayerMask;
     private static float GRAVITY = 9.8f;
     private Vector2 _currentHorizontal;
     private Rigidbody2D _rb;
@@ -28,7 +29,6 @@ public class PlayerController : MonoBehaviour
     private bool _canJump;
     private bool _jump;
     private bool _isMoving;
-
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
         _jump = false;
         _isMoving = false;
         _currentHorizontal = new Vector2(1, 0);
-
+        _initialExcludeLayerMask = GetComponent<BoxCollider2D>().excludeLayers;
     }
 
     void Update()
@@ -98,6 +98,15 @@ public class PlayerController : MonoBehaviour
 
     public void ChangeColor(Color color)
     {
-        GetComponent<SpriteRenderer>().color = color;
+        if (color != GetComponent<SpriteRenderer>().color)
+        {
+            ResetLayers();
+            GetComponent<SpriteRenderer>().color = color;
+        }
+    }
+
+    private void ResetLayers()
+    {
+        GetComponent<BoxCollider2D>().excludeLayers = _initialExcludeLayerMask;
     }
 }
