@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] LayerMask _jumpableLayer;
     [SerializeField] private float _moveDamp;
     [SerializeField] private float _stopDamp;
+    private PlayerInputActions playerInputActions;
     private bool IsMoving
     {
         set
@@ -29,7 +31,7 @@ public class PlayerController : MonoBehaviour
     private bool _canJump;
     private bool _jump;
     private bool _isMoving;
-    void Start()
+    void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
         _canJump = false;
@@ -37,17 +39,29 @@ public class PlayerController : MonoBehaviour
         _isMoving = false;
         _currentHorizontal = new Vector2(1, 0);
         _initialExcludeLayerMask = GetComponent<BoxCollider2D>().excludeLayers;
+        playerInputActions = new PlayerInputActions();
     }
 
-    void Update()
+    void OnEnable()
     {
-        _moveHorizontal = Input.GetAxisRaw("Horizontal");
+        playerInputActions.Enable();
 
-        if (Input.GetKeyDown(KeyCode.Space) && _canJump)
-        {
-            _jump = true;
-        }
+        playerInputActions.Player.Move.performed += MovePlayer;
+        playerInputActions.Player.Jump.performed += PlayerJump;
 
+        playerInputActions.Player.Move.canceled += MovePlayer;
+        playerInputActions.Player.Jump.canceled += PlayerJump;
+    }
+
+    void OnDisable()
+    {
+        playerInputActions.Disable();
+
+        playerInputActions.Player.Move.performed -= MovePlayer;
+        playerInputActions.Player.Jump.performed -= PlayerJump;
+
+        playerInputActions.Player.Move.canceled -= MovePlayer;
+        playerInputActions.Player.Jump.canceled -= PlayerJump;
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -67,6 +81,24 @@ public class PlayerController : MonoBehaviour
             _jump = false;
         }
     }
+
+    private void MovePlayer(InputAction.CallbackContext context)
+    {
+        _moveHorizontal = context.ReadValue<Vector2>().x;
+    }
+
+    private void PlayerJump(InputAction.CallbackContext context)
+    {
+
+        if (!context.performed)
+            return;
+
+        if (_canJump)
+        {
+            _jump = true;
+        }
+    }
+
 
     void FixedUpdate()
     {
