@@ -85,6 +85,17 @@ public class PlayerController : MonoBehaviour
     private void MovePlayer(InputAction.CallbackContext context)
     {
         _moveHorizontal = context.ReadValue<Vector2>().x;
+        if (_moveHorizontal != 0)
+        {
+            transform.localScale = new Vector3(Math.Sign(_moveHorizontal) * Math.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+
+            // There must be a cleaner way of doing this, for now it works
+            GameObject gunPivotObject = GameObject.FindGameObjectWithTag("GunPivot");
+            Vector2 gunPivotLocalScale = gunPivotObject.transform.localScale;
+
+            gunPivotObject.transform.localScale = new Vector2(Math.Sign(_moveHorizontal) * Math.Abs(gunPivotLocalScale.x), gunPivotLocalScale.y);
+
+        }
     }
 
     private void PlayerJump(InputAction.CallbackContext context)
