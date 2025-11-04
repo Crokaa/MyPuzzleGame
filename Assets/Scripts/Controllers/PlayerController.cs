@@ -4,44 +4,60 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movement")]
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
+    [Header("Jumpable Layers")]
     [SerializeField] LayerMask _jumpableLayer;
+    [Header("Damping")]
     [SerializeField] private float _moveDamp;
     [SerializeField] private float _stopDamp;
     private PlayerInputActions playerInputActions;
+    private LayerMask _initialExcludeLayerMask;
+    private static float GRAVITY = 9.8f;
+    private Vector2 _currentHorizontal;
+    private Rigidbody2D _rb;
+    private float _moveHorizontal;
     private bool IsMoving
     {
         set
         {
             _isMoving = value;
 
-            if (_isMoving)
+            if (_isMoving || !IsGrounded)
                 _rb.linearDamping = _moveDamp;
             else
                 _rb.linearDamping = _stopDamp;
-
         }
+        get { return _isMoving; }
     }
-    private LayerMask _initialExcludeLayerMask;
-    private static float GRAVITY = 9.8f;
-    private Vector2 _currentHorizontal;
-    private Rigidbody2D _rb;
-    private float _moveHorizontal;
-    private bool _canJump;
-    private bool _jump;
+    private bool IsGrounded
+    {
+        set
+        {
+            _isGrounded = value;
+
+            if (!_isGrounded || IsMoving)
+                _rb.linearDamping = _moveDamp;
+            else
+                _rb.linearDamping = _stopDamp;
+        }
+        get
+        { return _isGrounded; }
+    }
     private bool _isMoving;
+    private bool _isGrounded;
+    private bool _jump;
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
-        _canJump = false;
+        IsGrounded = false;
         _jump = false;
-        _isMoving = false;
+        IsMoving = false;
         _currentHorizontal = new Vector2(1, 0);
         _initialExcludeLayerMask = GetComponent<BoxCollider2D>().excludeLayers;
         playerInputActions = new PlayerInputActions();
     }
-
     void OnEnable()
     {
         playerInputActions.Enable();
@@ -66,18 +82,16 @@ public class PlayerController : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        // Grounded check has to change since the player now changes gravity
         if ((_jumpableLayer & (1 << collision.gameObject.layer)) != 0)
-            _canJump = true;
+            IsGrounded = true;
 
     }
 
     void OnTriggerExit2D(Collider2D collision)
     {
-        // Grounded check has to change since the player now changes gravity
         if ((_jumpableLayer & (1 << collision.gameObject.layer)) != 0)
         {
-            _canJump = false;
+            IsGrounded = false;
             _jump = false;
         }
     }
@@ -85,7 +99,7 @@ public class PlayerController : MonoBehaviour
     private void MovePlayer(InputAction.CallbackContext context)
     {
         _moveHorizontal = context.ReadValue<Vector2>().x;
-        if (_moveHorizontal != 0)
+        if (context.performed)
         {
             transform.localScale = new Vector3(Math.Sign(_moveHorizontal) * Math.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
 
@@ -96,47 +110,61 @@ public class PlayerController : MonoBehaviour
             gunPivotObject.transform.localScale = new Vector2(Math.Sign(_moveHorizontal) * Math.Abs(gunPivotLocalScale.x), gunPivotLocalScale.y);
 
         }
+        else
+        {
+            IsMoving = false;
+        }
     }
 
     private void PlayerJump(InputAction.CallbackContext context)
     {
 
-        if (!context.performed)
-            return;
+        if (!context.performed) return;
 
-        if (_canJump)
-        {
+        if (IsGrounded)
             _jump = true;
-        }
+
     }
 
 
     void FixedUpdate()
     {
+        HandleMoveSide();
+        HandleJump();
+    }
 
-        if (_moveHorizontal == 0 && _canJump)
+    private void HandleMoveSide()
+    {
+        if (_moveHorizontal != 0)
         {
-            IsMoving = false;
-        }
-        else
+            if (_currentHorizontal.y == 0f)
+                _rb.linearVelocity = new Vector2(_moveHorizontal * _speed, _rb.linearVelocity.y);
+            else
+                _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _moveHorizontal * _speed);
+
             IsMoving = true;
-
-        _rb.AddForce(_currentHorizontal * _moveHorizontal * _speed);
-
+        }
+    }
+    private void HandleJump()
+    {
         if (_jump)
         {
-            _rb.AddForce(_jumpForce * -Physics2D.gravity);
-            // Ideally the player hits the groudn and these values become false, but for now these have to be like this
-            _canJump = false;
-            _jump = false;
+            if (_currentHorizontal.y == 0f)
+                _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _jumpForce);
+            else
+                _rb.linearVelocity = new Vector2(_jumpForce, _rb.linearVelocity.x);
         }
     }
 
     public void ChangeGravity(Vector2 currentForce)
     {
         Physics2D.gravity = currentForce * GRAVITY;
-        _currentHorizontal = Quaternion.AngleAxis(90, new Vector3(0, 0, 1)) * currentForce;
-        transform.right = Quaternion.AngleAxis(90, new Vector3(0, 0, 1)) * currentForce;
+        _currentHorizontal = Vector2.Perpendicular(currentForce);
+        transform.right = Vector2.Perpendicular(currentForce);
+
+        // To account for the slight deviations of floats
+        _currentHorizontal = new Vector2(Mathf.Round(_currentHorizontal.x), Mathf.Round(_currentHorizontal.y));
+        transform.right = new Vector2(Mathf.Round(transform.right.x), Mathf.Round(transform.right.y));
     }
 
     public void ChangeColor(Color color)
