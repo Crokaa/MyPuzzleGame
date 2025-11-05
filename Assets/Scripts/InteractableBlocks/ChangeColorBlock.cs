@@ -1,8 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ChangeColorBlock : MonoBehaviour, IChangeableBlock
 {
-
     private Color _currentColor;
     private float _time = 0;
 
@@ -12,8 +12,6 @@ public class ChangeColorBlock : MonoBehaviour, IChangeableBlock
 
         player.ChangeColor(_currentColor);
     }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         int colorRandom = Random.Range(0, 3);
@@ -36,8 +34,6 @@ public class ChangeColorBlock : MonoBehaviour, IChangeableBlock
 
         GetComponent<SpriteRenderer>().color = _currentColor;
     }
-
-    // Update is called once per frame
     void Update()
     {
         _time += Time.deltaTime;

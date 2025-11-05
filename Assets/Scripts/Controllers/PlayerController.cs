@@ -7,8 +7,6 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
-    [Header("Jumpable Layers")]
-    [SerializeField] LayerMask _jumpableLayer;
     [Header("Damping")]
     [SerializeField] private float _moveDamp;
     [SerializeField] private float _stopDamp;
@@ -80,22 +78,6 @@ public class PlayerController : MonoBehaviour
         playerInputActions.Player.Jump.canceled -= PlayerJump;
     }
 
-    void OnTriggerEnter2D(Collider2D collision)
-    {
-        if ((_jumpableLayer & (1 << collision.gameObject.layer)) != 0)
-            IsGrounded = true;
-
-    }
-
-    void OnTriggerExit2D(Collider2D collision)
-    {
-        if ((_jumpableLayer & (1 << collision.gameObject.layer)) != 0)
-        {
-            IsGrounded = false;
-            _jump = false;
-        }
-    }
-
     private void MovePlayer(InputAction.CallbackContext context)
     {
         _moveHorizontal = context.ReadValue<Vector2>().x;
@@ -115,7 +97,6 @@ public class PlayerController : MonoBehaviour
             IsMoving = false;
         }
     }
-
     private void PlayerJump(InputAction.CallbackContext context)
     {
 
@@ -123,9 +104,32 @@ public class PlayerController : MonoBehaviour
 
         if (IsGrounded)
             _jump = true;
+    }
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if ((GameLayers.instance.JumpableLayers & (1 << collision.gameObject.layer)) != 0)
+            IsGrounded = true;
 
+        if ((GameLayers.instance.ColorRestrictiveJumpLayer & (1 << collision.gameObject.layer)) != 0 &&
+        collision.GetComponent<SpriteRenderer>().color != GetComponent<SpriteRenderer>().color)
+            IsGrounded = true;
     }
 
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        if ((GameLayers.instance.JumpableLayers & (1 << collision.gameObject.layer)) != 0)
+        {
+            IsGrounded = false;
+            _jump = false;
+        }
+
+        if ((GameLayers.instance.ColorRestrictiveJumpLayer & (1 << collision.gameObject.layer)) != 0 &&
+        collision.GetComponent<SpriteRenderer>().color != GetComponent<SpriteRenderer>().color)
+        {
+            IsGrounded = false;
+            _jump = false;
+        }
+    }
 
     void FixedUpdate()
     {
@@ -150,12 +154,13 @@ public class PlayerController : MonoBehaviour
         if (_jump)
         {
             if (_currentHorizontal.y == 0f)
-                _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _jumpForce);
+                _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _jumpForce * -Physics2D.gravity.normalized.y);
             else
-                _rb.linearVelocity = new Vector2(_jumpForce, _rb.linearVelocity.x);
+                _rb.linearVelocity = new Vector2(_jumpForce * -Physics2D.gravity.normalized.x, _rb.linearVelocity.y);
         }
     }
 
+    // This will probably go to a GameManager
     public void ChangeGravity(Vector2 currentForce)
     {
         Physics2D.gravity = currentForce * GRAVITY;
@@ -173,6 +178,7 @@ public class PlayerController : MonoBehaviour
         {
             ResetLayers();
             GetComponent<SpriteRenderer>().color = color;
+            GetComponent<BoxCollider2D>().excludeLayers |= ColorLayerDB.ColorLayers[color];
         }
     }
 

@@ -7,13 +7,10 @@ public class GunBehaviour : MonoBehaviour
     [SerializeField] private GameObject _bulletPrefab;
     [SerializeField] private Transform _spawnPoint;
     private Vector2 _localScale;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _localScale = transform.localScale;
     }
-
-    // Update is called once per frame
     void Update()
     {
         HandleRotation();
