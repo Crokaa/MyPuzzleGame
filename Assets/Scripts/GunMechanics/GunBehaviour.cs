@@ -39,4 +39,9 @@ public class GunBehaviour : MonoBehaviour
             Instantiate(_bulletPrefab, _spawnPoint.transform.position, transform.rotation);
 
     }
+
+    public void ChangeOrientation(Vector3 currentForce)
+    {
+        // TODO: Change the guns orientation based on the gravity
+    }
 }

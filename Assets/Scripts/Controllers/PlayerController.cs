@@ -10,10 +10,10 @@ public class PlayerController : MonoBehaviour
     [Header("Damping")]
     [SerializeField] private float _moveDamp;
     [SerializeField] private float _stopDamp;
+    private static float FLOATPRECISION = 0.000001f;
     private PlayerInputActions playerInputActions;
     private LayerMask _initialExcludeLayerMask;
     private static float GRAVITY = 9.8f;
-    private Vector2 _currentHorizontal;
     private Rigidbody2D _rb;
     private float _moveHorizontal;
     private bool IsMoving
@@ -52,7 +52,6 @@ public class PlayerController : MonoBehaviour
         IsGrounded = false;
         _jump = false;
         IsMoving = false;
-        _currentHorizontal = new Vector2(1, 0);
         _initialExcludeLayerMask = GetComponent<BoxCollider2D>().excludeLayers;
         playerInputActions = new PlayerInputActions();
     }
@@ -141,7 +140,7 @@ public class PlayerController : MonoBehaviour
     {
         if (_moveHorizontal != 0)
         {
-            if (_currentHorizontal.y == 0f)
+            if (-FLOATPRECISION <= transform.right.y && transform.right.y <= FLOATPRECISION)
                 _rb.linearVelocity = new Vector2(_moveHorizontal * _speed, _rb.linearVelocity.y);
             else
                 _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _moveHorizontal * _speed);
@@ -153,7 +152,7 @@ public class PlayerController : MonoBehaviour
     {
         if (_jump)
         {
-            if (_currentHorizontal.y == 0f)
+            if (-FLOATPRECISION <= transform.right.y && transform.right.y <= FLOATPRECISION)
                 _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _jumpForce * -Physics2D.gravity.normalized.y);
             else
                 _rb.linearVelocity = new Vector2(_jumpForce * -Physics2D.gravity.normalized.x, _rb.linearVelocity.y);
@@ -164,14 +163,12 @@ public class PlayerController : MonoBehaviour
     public void ChangeGravity(Vector2 currentForce)
     {
         Physics2D.gravity = currentForce * GRAVITY;
-        _currentHorizontal = Vector2.Perpendicular(currentForce);
-        transform.right = Vector2.Perpendicular(currentForce);
 
-        // To account for the slight deviations of floats
-        _currentHorizontal = new Vector2(Mathf.Round(_currentHorizontal.x), Mathf.Round(_currentHorizontal.y));
-        transform.right = new Vector2(Mathf.Round(transform.right.x), Mathf.Round(transform.right.y));
+        Vector2 targetVector = Vector2.Perpendicular(currentForce);
+
+        float angle = Vector2.SignedAngle(Vector2.right, targetVector);
+        transform.rotation = Quaternion.Euler(0, 0, angle);
     }
-
     public void ChangeColor(Color color)
     {
         if (color != GetComponent<SpriteRenderer>().color)

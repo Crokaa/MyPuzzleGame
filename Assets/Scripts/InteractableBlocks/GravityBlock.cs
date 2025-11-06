@@ -6,5 +6,8 @@ public class Gravityblock : MonoBehaviour, IChangeableBlock
     {
         PlayerController player = FindFirstObjectByType<PlayerController>();
         player.ChangeGravity(transform.right);
+
+        GunBehaviour gun = FindFirstObjectByType<GunBehaviour>();
+        gun.ChangeOrientation(transform.right);
     }
 }

@@ -186,7 +186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameLayers
   _jumpableLayers:
     serializedVersion: 2
-    m_Bits: 320
+    m_Bits: 16704
   _redWallLayer:
     serializedVersion: 2
     m_Bits: 2048
@@ -196,6 +196,12 @@ MonoBehaviour:
   _greenWallLayer:
     serializedVersion: 2
     m_Bits: 8192
+  _bulletDestroyer:
+    serializedVersion: 2
+    m_Bits: 32576
+  _environmentChangeLayer:
+    serializedVersion: 2
+    m_Bits: 1536
 --- !u!4 &135492394
 Transform:
   m_ObjectHideFlags: 0
@@ -1466,7 +1472,7 @@ GameObject:
   - component: {fileID: 1499045504}
   - component: {fileID: 1499045506}
   - component: {fileID: 1499045505}
-  m_Layer: 6
+  m_Layer: 14
   m_Name: Roof
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2039,12 +2045,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   _speed: 5
   _jumpForce: 5
-  _jumpableLayer:
-    serializedVersion: 2
-    m_Bits: 320
-  _colorRestrictiveJumpLayer:
-    serializedVersion: 2
-    m_Bits: 14336
   _moveDamp: 0
   _stopDamp: 10
 --- !u!114 &1852783344

@@ -4,8 +4,6 @@ public class BulletBehaviour : MonoBehaviour
 {
     [SerializeField] private float _speed = 15;
     [SerializeField] private float _destroyTimer = 5;
-    [SerializeField] private LayerMask _layerDestroyBullet;
-    [SerializeField] private LayerMask _layerEnvironmentChange;
     private Rigidbody2D _rb;
 
     void Start()
@@ -29,10 +27,10 @@ public class BulletBehaviour : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if ((_layerDestroyBullet & (1 << collision.gameObject.layer)) != 0)
+        if ((GameLayers.instance.BulletDestroyerLayer & (1 << collision.gameObject.layer)) != 0)
             Destroy(gameObject);
 
-        if ((_layerEnvironmentChange & (1 << collision.gameObject.layer)) != 0)
+        if ((GameLayers.instance.EnvironmentChangeLayer & (1 << collision.gameObject.layer)) != 0)
             collision.GetComponent<IChangeableBlock>().ApplyChange();
     }
 }
