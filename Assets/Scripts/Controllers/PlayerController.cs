@@ -141,9 +141,9 @@ public class PlayerController : MonoBehaviour
         if (_moveHorizontal != 0)
         {
             if (-FLOATPRECISION <= transform.right.y && transform.right.y <= FLOATPRECISION)
-                _rb.linearVelocity = new Vector2(_moveHorizontal * _speed, _rb.linearVelocity.y);
+                _rb.linearVelocity = new Vector2(_moveHorizontal * _speed * transform.right.x, _rb.linearVelocity.y);
             else
-                _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _moveHorizontal * _speed);
+                _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _moveHorizontal * _speed * transform.right.y);
 
             IsMoving = true;
         }
@@ -159,7 +159,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // This will probably go to a GameManager
+    // TODO: Change this so it's based on the GameManager's Gravity variable and the player doesn't know gravity
     public void ChangeGravity(Vector2 currentForce)
     {
         Physics2D.gravity = currentForce * GRAVITY;

@@ -24,10 +24,15 @@ public class GunBehaviour : MonoBehaviour
         transform.right = dir;
 
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+        //TODO: Get gravity's value from GameManager (variable)
+        Vector2 gravityPerpendicular = Vector2.Perpendicular(Physics2D.gravity).normalized;
+
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
         Vector2 newLocalScale = _localScale;
-        if (Mathf.Abs(angle) > 90)
+
+        if (Mathf.Abs(Vector2.Angle(dir, gravityPerpendicular)) > 90)
             newLocalScale.y *= -1;
 
         transform.localScale = newLocalScale;
@@ -38,10 +43,5 @@ public class GunBehaviour : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse0))
             Instantiate(_bulletPrefab, _spawnPoint.transform.position, transform.rotation);
 
-    }
-
-    public void ChangeOrientation(Vector3 currentForce)
-    {
-        // TODO: Change the guns orientation based on the gravity
     }
 }
