@@ -10,10 +10,9 @@ public class PlayerController : MonoBehaviour
     [Header("Damping")]
     [SerializeField] private float _moveDamp;
     [SerializeField] private float _stopDamp;
-    private static float FLOATPRECISION = 0.000001f;
+    private static readonly float FLOATPRECISION = 0.000001f;
     private PlayerInputActions playerInputActions;
     private LayerMask _initialExcludeLayerMask;
-    private static float GRAVITY = 9.8f;
     private Rigidbody2D _rb;
     private float _moveHorizontal;
     private bool IsMoving
@@ -158,15 +157,8 @@ public class PlayerController : MonoBehaviour
                 _rb.linearVelocity = new Vector2(_jumpForce * -Physics2D.gravity.normalized.x, _rb.linearVelocity.y);
         }
     }
-
-    // TODO: Change this so it's based on the GameManager's Gravity variable and the player doesn't know gravity
-    public void ChangeGravity(Vector2 currentForce)
+    public void Rotate(float angle)
     {
-        Physics2D.gravity = currentForce * GRAVITY;
-
-        Vector2 targetVector = Vector2.Perpendicular(currentForce);
-
-        float angle = Vector2.SignedAngle(Vector2.right, targetVector);
         transform.rotation = Quaternion.Euler(0, 0, angle);
     }
     public void ChangeColor(Color color)

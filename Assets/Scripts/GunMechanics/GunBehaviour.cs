@@ -22,14 +22,10 @@ public class GunBehaviour : MonoBehaviour
         Vector2 worldPos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         Vector2 dir = worldPos - (Vector2)transform.position;
         transform.right = dir;
-
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
-        //TODO: Get gravity's value from GameManager (variable)
-        Vector2 gravityPerpendicular = Vector2.Perpendicular(Physics2D.gravity).normalized;
-
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
+        Vector2 gravityPerpendicular = Vector2.Perpendicular(GameManager.instance.Gravity).normalized;
         Vector2 newLocalScale = _localScale;
 
         if (Mathf.Abs(Vector2.Angle(dir, gravityPerpendicular)) > 90)
