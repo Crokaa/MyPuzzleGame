@@ -42,6 +42,10 @@ public class PlayerController : MonoBehaviour
         get
         { return _isGrounded; }
     }
+
+    private PushableObject _pushableBox;
+    private bool _canPush;
+    private bool _push;
     private bool _isMoving;
     private bool _isGrounded;
     private bool _jump;
@@ -51,6 +55,8 @@ public class PlayerController : MonoBehaviour
         IsGrounded = false;
         _jump = false;
         IsMoving = false;
+        _canPush = false;
+        _push = false;
         _initialExcludeLayerMask = GetComponent<BoxCollider2D>().excludeLayers;
         playerInputActions = new PlayerInputActions();
     }
@@ -60,9 +66,11 @@ public class PlayerController : MonoBehaviour
 
         playerInputActions.Player.Move.performed += MovePlayer;
         playerInputActions.Player.Jump.performed += PlayerJump;
+        playerInputActions.Player.Push.performed += PlayerPush;
 
         playerInputActions.Player.Move.canceled += MovePlayer;
         playerInputActions.Player.Jump.canceled += PlayerJump;
+        playerInputActions.Player.Push.canceled += PlayerPush;
     }
 
     void OnDisable()
@@ -71,9 +79,11 @@ public class PlayerController : MonoBehaviour
 
         playerInputActions.Player.Move.performed -= MovePlayer;
         playerInputActions.Player.Jump.performed -= PlayerJump;
+        playerInputActions.Player.Push.performed -= PlayerPush;
 
         playerInputActions.Player.Move.canceled -= MovePlayer;
         playerInputActions.Player.Jump.canceled -= PlayerJump;
+        playerInputActions.Player.Push.canceled -= PlayerPush;
     }
 
     private void MovePlayer(InputAction.CallbackContext context)
@@ -97,12 +107,25 @@ public class PlayerController : MonoBehaviour
     }
     private void PlayerJump(InputAction.CallbackContext context)
     {
-
         if (!context.performed) return;
 
         if (IsGrounded)
+        {
             _jump = true;
+            _push = false;
+        }
     }
+
+    private void PlayerPush(InputAction.CallbackContext context)
+    {
+        if (!_canPush || !IsGrounded) return;
+
+        if (context.performed)
+            _push = true;
+        else
+            _push = false;
+    }
+
     void OnTriggerEnter2D(Collider2D collision)
     {
         if ((GameLayers.instance.JumpableLayers & (1 << collision.gameObject.layer)) != 0)
@@ -111,6 +134,12 @@ public class PlayerController : MonoBehaviour
         if ((GameLayers.instance.ColorRestrictiveJumpLayer & (1 << collision.gameObject.layer)) != 0 &&
         collision.GetComponent<SpriteRenderer>().color != GetComponent<SpriteRenderer>().color)
             IsGrounded = true;
+
+        if ((GameLayers.instance.InteractableLayer & (1 << collision.gameObject.layer)) != 0 && collision.gameObject.transform.right == transform.right)
+        {
+            _pushableBox = collision.GetComponentInParent<PushableObject>();
+            _canPush = true;
+        }
     }
 
     void OnTriggerExit2D(Collider2D collision)
@@ -127,12 +156,26 @@ public class PlayerController : MonoBehaviour
             IsGrounded = false;
             _jump = false;
         }
+
+        if ((GameLayers.instance.InteractableLayer & (1 << collision.gameObject.layer)) != 0 && collision.gameObject.transform.right == transform.right)
+        {
+            _canPush = false;
+            _pushableBox.StopPush();
+            _pushableBox = null;
+        }
     }
 
     void FixedUpdate()
     {
         HandleMoveSide();
         HandleJump();
+        HandlePush();
+    }
+
+    private void HandlePush()
+    {
+        if (_pushableBox != null && _push)
+            _pushableBox.Push();
     }
 
     private void HandleMoveSide()

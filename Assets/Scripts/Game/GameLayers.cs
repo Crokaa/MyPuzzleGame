@@ -8,6 +8,7 @@ public class GameLayers : MonoBehaviour
     [SerializeField] private LayerMask _greenWallLayer;
     [SerializeField] private LayerMask _bulletDestroyer;
     [SerializeField] private LayerMask _environmentChangeLayer;
+    [SerializeField] private LayerMask _interactableLayer;
     public LayerMask JumpableLayers { get { return _jumpableLayers; } }
     public LayerMask ColorRestrictiveJumpLayer { get { return _redWallLayer | _blueWallLayer | _greenWallLayer; } }
     public LayerMask RedWallLayer { get { return _redWallLayer; } }
@@ -16,6 +17,7 @@ public class GameLayers : MonoBehaviour
     public LayerMask BulletDestroyerLayer { get { return _bulletDestroyer; } }
 
     public LayerMask EnvironmentChangeLayer { get { return _environmentChangeLayer; } }
+    public LayerMask InteractableLayer { get { return _interactableLayer; } }
 
     public static GameLayers instance;
 
