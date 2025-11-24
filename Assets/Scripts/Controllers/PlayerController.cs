@@ -5,7 +5,8 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float _speed;
+    [SerializeField] private float _moveSpeed;
+    [SerializeField] private float _pushSpeed;
     [SerializeField] private float _jumpForce;
     [Header("Damping")]
     [SerializeField] private float _moveDamp;
@@ -44,6 +45,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private PushableObject _pushableBox;
+    private float _currentSpeed;
     private bool _canPush;
     private bool _push;
     private bool _isMoving;
@@ -52,6 +54,7 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
+        _currentSpeed = _moveSpeed;
         IsGrounded = false;
         _jump = false;
         IsMoving = false;
@@ -121,9 +124,12 @@ public class PlayerController : MonoBehaviour
         if (!_canPush || !IsGrounded) return;
 
         if (context.performed)
+        {
             _push = true;
+            _currentSpeed = _pushSpeed;
+        }
         else
-            _push = false;
+            StopPush();
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -135,7 +141,7 @@ public class PlayerController : MonoBehaviour
         collision.GetComponent<SpriteRenderer>().color != GetComponent<SpriteRenderer>().color)
             IsGrounded = true;
 
-        if ((GameLayers.instance.InteractableLayer & (1 << collision.gameObject.layer)) != 0 && collision.gameObject.transform.right == transform.right)
+        if ((GameLayers.instance.InteractableLayer & (1 << collision.gameObject.layer)) != 0 && _pushableBox == null && collision.transform.right == transform.right)
         {
             _pushableBox = collision.GetComponentInParent<PushableObject>();
             _canPush = true;
@@ -157,12 +163,20 @@ public class PlayerController : MonoBehaviour
             _jump = false;
         }
 
-        if ((GameLayers.instance.InteractableLayer & (1 << collision.gameObject.layer)) != 0 && collision.gameObject.transform.right == transform.right)
+        if ((GameLayers.instance.InteractableLayer & (1 << collision.gameObject.layer)) != 0 && _pushableBox != null)
         {
+            StopPush();
             _canPush = false;
-            _pushableBox.StopPush();
             _pushableBox = null;
         }
+    }
+
+    private void StopPush()
+    {
+        _currentSpeed = _moveSpeed;
+        _push = false;
+
+        _pushableBox.StopPush();
     }
 
     void FixedUpdate()
@@ -183,9 +197,9 @@ public class PlayerController : MonoBehaviour
         if (_moveHorizontal != 0)
         {
             if (-FLOATPRECISION <= transform.right.y && transform.right.y <= FLOATPRECISION)
-                _rb.linearVelocity = new Vector2(_moveHorizontal * _speed * transform.right.x, _rb.linearVelocity.y);
+                _rb.linearVelocity = new Vector2(_moveHorizontal * _currentSpeed * transform.right.x, _rb.linearVelocity.y);
             else
-                _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _moveHorizontal * _speed * transform.right.y);
+                _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _moveHorizontal * _currentSpeed * transform.right.y);
 
             IsMoving = true;
         }
