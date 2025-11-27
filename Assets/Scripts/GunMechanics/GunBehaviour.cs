@@ -13,8 +13,11 @@ public class GunBehaviour : MonoBehaviour
     }
     void Update()
     {
-        HandleRotation();
-        HandleShooting();
+        if (Time.timeScale != 0f)
+        {
+            HandleRotation();
+            HandleShooting();
+        }
     }
 
     private void HandleRotation()

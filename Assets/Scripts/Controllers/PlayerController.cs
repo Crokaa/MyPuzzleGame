@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _moveDamp;
     [SerializeField] private float _stopDamp;
     private static readonly float FLOATPRECISION = 0.000001f;
-    private PlayerInputActions playerInputActions;
+    private PlayerInputActions _playerInputActions;
     private LayerMask _initialExcludeLayerMask;
     private Rigidbody2D _rb;
     private float _moveHorizontal;
@@ -61,32 +61,32 @@ public class PlayerController : MonoBehaviour
         _canPush = false;
         _push = false;
         _initialExcludeLayerMask = GetComponent<BoxCollider2D>().excludeLayers;
-        playerInputActions = new PlayerInputActions();
+        _playerInputActions = new PlayerInputActions();
     }
     void OnEnable()
     {
-        playerInputActions.Enable();
+        _playerInputActions.Enable();
 
-        playerInputActions.Player.Move.performed += MovePlayer;
-        playerInputActions.Player.Jump.performed += PlayerJump;
-        playerInputActions.Player.Push.performed += PlayerPush;
+        _playerInputActions.Player.Move.performed += MovePlayer;
+        _playerInputActions.Player.Jump.performed += PlayerJump;
+        _playerInputActions.Player.Push.performed += PlayerPush;
 
-        playerInputActions.Player.Move.canceled += MovePlayer;
-        playerInputActions.Player.Jump.canceled += PlayerJump;
-        playerInputActions.Player.Push.canceled += PlayerPush;
+        _playerInputActions.Player.Move.canceled += MovePlayer;
+        _playerInputActions.Player.Jump.canceled += PlayerJump;
+        _playerInputActions.Player.Push.canceled += PlayerPush;
     }
 
     void OnDisable()
     {
-        playerInputActions.Disable();
+        _playerInputActions.Disable();
 
-        playerInputActions.Player.Move.performed -= MovePlayer;
-        playerInputActions.Player.Jump.performed -= PlayerJump;
-        playerInputActions.Player.Push.performed -= PlayerPush;
+        _playerInputActions.Player.Move.performed -= MovePlayer;
+        _playerInputActions.Player.Jump.performed -= PlayerJump;
+        _playerInputActions.Player.Push.performed -= PlayerPush;
 
-        playerInputActions.Player.Move.canceled -= MovePlayer;
-        playerInputActions.Player.Jump.canceled -= PlayerJump;
-        playerInputActions.Player.Push.canceled -= PlayerPush;
+        _playerInputActions.Player.Move.canceled -= MovePlayer;
+        _playerInputActions.Player.Jump.canceled -= PlayerJump;
+        _playerInputActions.Player.Push.canceled -= PlayerPush;
     }
 
     private void MovePlayer(InputAction.CallbackContext context)
