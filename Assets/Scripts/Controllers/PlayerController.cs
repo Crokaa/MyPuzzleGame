@@ -29,9 +29,9 @@ public class PlayerController : MonoBehaviour
         }
         get { return _isMoving; }
     }
-    private bool IsGrounded
+    public bool IsGrounded
     {
-        set
+        private set
         {
             _isGrounded = value;
 
@@ -39,6 +39,12 @@ public class PlayerController : MonoBehaviour
                 _rb.linearDamping = _moveDamp;
             else
                 _rb.linearDamping = _stopDamp;
+
+            if (_isGrounded && _canPush)
+                GameManager.instance.InteractShow();
+            else if (!_isGrounded)
+                GameManager.instance.InteractHide();
+
         }
         get
         { return _isGrounded; }
@@ -124,10 +130,7 @@ public class PlayerController : MonoBehaviour
         if (!_canPush || !IsGrounded) return;
 
         if (context.performed)
-        {
             _push = true;
-            _currentSpeed = _pushSpeed;
-        }
         else
             StopPush();
     }
@@ -143,6 +146,9 @@ public class PlayerController : MonoBehaviour
 
         if ((GameLayers.instance.InteractableLayer & (1 << collision.gameObject.layer)) != 0 && _pushableBox == null && collision.transform.right == transform.right)
         {
+            if (IsGrounded)
+                GameManager.instance.InteractShow();
+
             _pushableBox = collision.GetComponentInParent<PushableObject>();
             _canPush = true;
         }
@@ -165,6 +171,7 @@ public class PlayerController : MonoBehaviour
 
         if ((GameLayers.instance.InteractableLayer & (1 << collision.gameObject.layer)) != 0 && _pushableBox != null)
         {
+            GameManager.instance.InteractHide();
             StopPush();
             _canPush = false;
             _pushableBox = null;
@@ -181,22 +188,44 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        HandlePush();
         HandleMoveSide();
         HandleJump();
-        HandlePush();
+    }
+
+    private bool IsGravityUpDown()
+    {
+        return -FLOATPRECISION <= transform.right.y && transform.right.y <= FLOATPRECISION;
     }
 
     private void HandlePush()
     {
-        if (_pushableBox != null && _push)
-            _pushableBox.Push();
+        if (_pushableBox == null || !_push) return;
+
+
+        Vector2 boxCenter = _pushableBox.transform.position;
+        Vector2 playerCenter = transform.position;
+
+        if (IsGravityUpDown())
+        {
+            if ((boxCenter.x > playerCenter.x && _moveHorizontal * transform.right.x <= 0) || (boxCenter.x < playerCenter.x && _moveHorizontal * transform.right.x >= 0))
+                return;
+        }
+        else
+        {
+            if ((boxCenter.y > playerCenter.y && _moveHorizontal * transform.right.x <= 0) || (boxCenter.y < playerCenter.y && _moveHorizontal * transform.right.x >= 0))
+                return;
+        }
+
+        _pushableBox.Push();
+        _currentSpeed = _pushSpeed;
     }
 
     private void HandleMoveSide()
     {
         if (_moveHorizontal != 0)
         {
-            if (-FLOATPRECISION <= transform.right.y && transform.right.y <= FLOATPRECISION)
+            if (IsGravityUpDown())
                 _rb.linearVelocity = new Vector2(_moveHorizontal * _currentSpeed * transform.right.x, _rb.linearVelocity.y);
             else
                 _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _moveHorizontal * _currentSpeed * transform.right.y);
@@ -208,7 +237,7 @@ public class PlayerController : MonoBehaviour
     {
         if (_jump)
         {
-            if (-FLOATPRECISION <= transform.right.y && transform.right.y <= FLOATPRECISION)
+            if (IsGravityUpDown())
                 _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _jumpForce * -Physics2D.gravity.normalized.y);
             else
                 _rb.linearVelocity = new Vector2(_jumpForce * -Physics2D.gravity.normalized.x, _rb.linearVelocity.y);

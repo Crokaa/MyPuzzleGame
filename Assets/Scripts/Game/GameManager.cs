@@ -84,6 +84,8 @@ public class GameManager : MonoBehaviour
     }
     public void InteractShow()
     {
+        if (_inGameCanvas != null && _inGameCanvas.activeSelf) return;
+
         // Not sure about this line yet
         _inGameCanvas.SetActive(true);
 
@@ -99,6 +101,9 @@ public class GameManager : MonoBehaviour
 
     public void InteractHide()
     {
+
+        if (_inGameCanvas != null && !_inGameCanvas.activeSelf) return;
+
         // This check is made in case the game is closed and the player is inside an interact zone
         if (_inGameCanvas != null)
         {

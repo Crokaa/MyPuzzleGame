@@ -11,19 +11,6 @@ public class PushableObject : MonoBehaviour
         _rb.bodyType = RigidbodyType2D.Static;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player") && collision.transform.right == transform.right)
-            GameManager.instance.InteractShow();
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player") && collision.transform.right == transform.right)
-            GameManager.instance.InteractHide();
-
-    }
-
     public void Push()
     {
         // This line is so I don't forget what I want to do

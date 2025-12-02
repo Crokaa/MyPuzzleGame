@@ -1737,7 +1737,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: INTERACT (Right Click)
+  m_Text: PUSH (Right Click)
 --- !u!222 &1082861232
 CanvasRenderer:
   m_ObjectHideFlags: 0
