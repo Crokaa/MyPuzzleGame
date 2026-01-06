@@ -1,5 +1,6 @@
 using UnityEngine.InputSystem;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -46,6 +47,19 @@ public class GameManager : MonoBehaviour
         _inGameCanvas.SetActive(false);
         _inputActions = new PlayerInputActions();
         IsPaused = false;
+
+        SetOnPauseButtons();
+    }
+
+    private void SetOnPauseButtons()
+    {
+
+        Button[] buttons = _pauseCanvas.GetComponentsInChildren<Button>();
+        foreach (Button button in buttons)
+        {
+            if (button.name == "ContinueText")
+                button.onClick.AddListener(() => IsPaused = !IsPaused);
+        }
     }
 
     void OnEnable()
