@@ -1,9 +1,14 @@
 using UnityEngine.InputSystem;
 using UnityEngine;
 using UnityEngine.UI;
+using NUnit.Framework.Constraints;
+
+
 
 public class GameManager : MonoBehaviour
 {
+    private enum GameState { MenuState, InGame, Pause }; // if needed these will be public
+
     [Header("Player")]
     [SerializeField] private PlayerController _player;
     [Header("Canvas")]
@@ -22,12 +27,13 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                Time.timeScale = 1f;
                 _pauseCanvas.SetActive(false);
+                Time.timeScale = 1f;
             }
         }
     }
     private PlayerInputActions _inputActions;
+    private GameState CurrentGameState { get; set; }
 
     private static readonly float GRAVITYFORCE = 9.8f; // Positive value, but force will be down (negative)
     public Vector2 Gravity
@@ -47,6 +53,7 @@ public class GameManager : MonoBehaviour
         _inGameCanvas.SetActive(false);
         _inputActions = new PlayerInputActions();
         IsPaused = false;
+        CurrentGameState = GameState.InGame; // For now I'll be in game so I can pause too, once I add a menu and all that I'll for sure use a different one.
 
         SetOnPauseButtons();
     }
@@ -57,8 +64,13 @@ public class GameManager : MonoBehaviour
         Button[] buttons = _pauseCanvas.GetComponentsInChildren<Button>();
         foreach (Button button in buttons)
         {
+            button.navigation = new Navigation { mode = Navigation.Mode.None };
             if (button.name == "ContinueText")
                 button.onClick.AddListener(() => IsPaused = !IsPaused);
+            //else if (button.name == "OptionsText")
+            //    button.onClick.AddListener(() => );
+            else if (button.name == "QuitToMenuText")
+                button.onClick.AddListener(() => CurrentGameState = GameState.MenuState);
         }
     }
 
@@ -82,9 +94,14 @@ public class GameManager : MonoBehaviour
 
     private void PauseUnpause(InputAction.CallbackContext context)
     {
-        if (context.canceled) return;
+        if (context.canceled && (CurrentGameState == GameState.InGame || CurrentGameState == GameState.Pause)) return;
 
         IsPaused = !IsPaused;
+
+        if (IsPaused)
+            CurrentGameState = GameState.Pause;
+        else
+            CurrentGameState = GameState.InGame;
     }
 
     public void ChangeGravity(Vector2 currentForce)
