@@ -60,15 +60,20 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
+        _initialExcludeLayerMask = GetComponent<BoxCollider2D>().excludeLayers;
+        _playerInputActions = new PlayerInputActions();
+    }
+
+    void Start()
+    {
         _currentSpeed = _moveSpeed;
         IsGrounded = false;
         _jump = false;
         IsMoving = false;
         _canPush = false;
         _push = false;
-        _initialExcludeLayerMask = GetComponent<BoxCollider2D>().excludeLayers;
-        _playerInputActions = new PlayerInputActions();
     }
+
     void OnEnable()
     {
         _playerInputActions.Enable();

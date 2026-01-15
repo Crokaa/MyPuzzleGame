@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
     [Header("Canvas")]
     [SerializeField] private GameObject _inGameCanvas;
     [SerializeField] private GameObject _pauseCanvas;
-    [SerializeField] private GameObject _mainMenuCanvas;
     private bool IsPaused
     {
         get { return _isPaused; }
