@@ -7,6 +7,18 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     private enum GameState { MenuState, InGame, Pause }; // if needed these will be public
+    private class UINames
+    {
+        public const string CONTINUETEXT = "ContinueText";
+        public const string QUITTOMENUTEXT = "QuitToMenuText";
+        public const string SETTINGSTEXT = "SettingsText";
+        public const string MENUSCENENAME = "MenuScene";
+        public const string MENUCANVASTAG = "MenuCanvas";
+        public const string STARTGAMETEXT = "StartGameText";
+        public const string CHOOSELEVEL = "ChooseLevelText";
+        public const string QUITGAMETEXT = "QuitGameText";
+
+    }
 
     [Header("Player")]
     [SerializeField] private PlayerController _player;
@@ -31,7 +43,7 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    private static string MENUSCENENAME = "MenuScene";
+
     private PlayerInputActions _inputActions;
     private GameState CurrentGameState { get; set; }
 
@@ -53,9 +65,32 @@ public class GameManager : MonoBehaviour
         _inGameCanvas.SetActive(false);
         _inputActions = new PlayerInputActions();
         IsPaused = false;
-        CurrentGameState = GameState.InGame; // For now I'll be in game so I can pause too, once I add a menu and all that I'll for sure use a different one.
+        CurrentGameState = GameState.MenuState;
 
         SetOnPauseButtons();
+    }
+    void Start()
+    {
+        SetMenuCanvas();
+    }
+
+    private void SetMenuCanvas()
+    {
+        GameObject menuCanvas = GameObject.FindGameObjectWithTag(UINames.MENUCANVASTAG);
+
+        Button[] menuButtons = menuCanvas.GetComponentsInChildren<Button>();
+        foreach (Button button in menuButtons)
+        {
+            button.navigation = new Navigation { mode = Navigation.Mode.None };
+            if (button.name == UINames.STARTGAMETEXT)
+                button.onClick.AddListener(() => Debug.Log("Start Game"));
+            else if (button.name == UINames.CHOOSELEVEL)
+                button.onClick.AddListener(() => Debug.Log("Choose Level"));
+            else if (button.name == UINames.SETTINGSTEXT)
+                button.onClick.AddListener(() => Debug.Log("Settings"));
+            else if (button.name == UINames.QUITGAMETEXT)
+                button.onClick.AddListener(() => Debug.Log("Quitting the game..."));
+        }
     }
 
     private void SetOnPauseButtons()
@@ -65,11 +100,11 @@ public class GameManager : MonoBehaviour
         foreach (Button button in buttons)
         {
             button.navigation = new Navigation { mode = Navigation.Mode.None };
-            if (button.name == "ContinueText")
+            if (button.name == UINames.CONTINUETEXT)
                 button.onClick.AddListener(() => IsPaused = !IsPaused);
-            //else if (button.name == "OptionsText")
-            //    button.onClick.AddListener(() => );
-            else if (button.name == "QuitToMenuText")
+            else if (button.name == UINames.SETTINGSTEXT)
+                button.onClick.AddListener(() => Debug.Log("Settings"));
+            else if (button.name == UINames.QUITTOMENUTEXT)
                 button.onClick.AddListener(() => CurrentGameState = GameState.MenuState);
         }
     }

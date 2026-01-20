@@ -6,6 +6,7 @@ TagManager:
   tags:
   - GunPivot
   - InteractText
+  - MenuCanvas
   layers:
   - Default
   - TransparentFX
