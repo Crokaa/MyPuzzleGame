@@ -1,6 +1,7 @@
 using UnityEngine.InputSystem;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 
 
@@ -13,6 +14,7 @@ public class GameManager : MonoBehaviour
         public const string QUITTOMENUTEXT = "QuitToMenuText";
         public const string SETTINGSTEXT = "SettingsText";
         public const string MENUSCENENAME = "MenuScene";
+        public const string TESTLEVELCENENAME = "TestLevelScene";
         public const string MENUCANVASTAG = "MenuCanvas";
         public const string STARTGAMETEXT = "StartGameText";
         public const string CHOOSELEVEL = "ChooseLevelText";
@@ -83,7 +85,12 @@ public class GameManager : MonoBehaviour
         {
             button.navigation = new Navigation { mode = Navigation.Mode.None };
             if (button.name == UINames.STARTGAMETEXT)
-                button.onClick.AddListener(() => Debug.Log("Start Game"));
+                button.onClick.AddListener(() =>
+                {
+                    CurrentGameState = GameState.InGame;
+                    SceneController.instance.LoadScene(UINames.TESTLEVELCENENAME);
+                    _player.gameObject.SetActive(true);
+                });
             else if (button.name == UINames.CHOOSELEVEL)
                 button.onClick.AddListener(() => Debug.Log("Choose Level"));
             else if (button.name == UINames.SETTINGSTEXT)
@@ -105,7 +112,11 @@ public class GameManager : MonoBehaviour
             else if (button.name == UINames.SETTINGSTEXT)
                 button.onClick.AddListener(() => Debug.Log("Settings"));
             else if (button.name == UINames.QUITTOMENUTEXT)
-                button.onClick.AddListener(() => CurrentGameState = GameState.MenuState);
+                button.onClick.AddListener(() =>
+                {
+                    CurrentGameState = GameState.MenuState;
+                    SceneManager.LoadScene(UINames.MENUSCENENAME);
+                });
         }
     }
 
