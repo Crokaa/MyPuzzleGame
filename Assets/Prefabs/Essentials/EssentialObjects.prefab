@@ -272,6 +272,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: UICanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 4690880290351312122, guid: 8800599a1437c5e4c900e458bf933120, type: 3}
+      propertyPath: m_TagString
+      value: InGameCanvasTag
+      objectReference: {fileID: 0}
     - target: {fileID: 5765808337918446157, guid: 8800599a1437c5e4c900e458bf933120, type: 3}
       propertyPath: m_LocalPosition.x
       value: 8.81363
@@ -473,8 +477,28 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2231655571146530905, guid: db6f325d38717b54684b0063df86e072, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3570930900768591230}
   m_SourcePrefab: {fileID: 100100000, guid: db6f325d38717b54684b0063df86e072, type: 3}
+--- !u!1 &4789334895178860917 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2231655571146530905, guid: db6f325d38717b54684b0063df86e072, type: 3}
+  m_PrefabInstance: {fileID: 6669633536996223276}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3570930900768591230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4789334895178860917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e0e108b9b50b814295e5567f3c8d0db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SceneController
 --- !u!4 &7162461917753756900 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4605319258468574664, guid: db6f325d38717b54684b0063df86e072, type: 3}
@@ -543,6 +567,10 @@ PrefabInstance:
     - target: {fileID: 8016004024906163797, guid: 82cb41092ca99724d951843cff065565, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 8016004024906163797, guid: 82cb41092ca99724d951843cff065565, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

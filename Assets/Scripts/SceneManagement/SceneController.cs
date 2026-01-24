@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -14,6 +16,14 @@ public class SceneController : MonoBehaviour
 
     public void LoadScene(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
+        StartCoroutine(AsyncLoadScene(sceneName));
+
+    }
+
+    private IEnumerator AsyncLoadScene(string sceneName)
+    {
+
+        SceneManager.LoadSceneAsync(sceneName);
+        yield return new WaitForSeconds(1);
     }
 }
