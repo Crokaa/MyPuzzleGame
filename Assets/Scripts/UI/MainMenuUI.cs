@@ -3,10 +3,7 @@ using UnityEngine.UI;
 
 public class MainMenuUI : MonoBehaviour
 {
-    void Awake()
-    {
 
-    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -31,15 +28,9 @@ public class MainMenuUI : MonoBehaviour
             else if (button.name == UINamesHelper.GetName(UIName.ChooseLevelText))
                 button.onClick.AddListener(() => Debug.Log("Choose Level"));
             else if (button.name == UINamesHelper.GetName(UIName.SettingsText))
-                button.onClick.AddListener(() => Debug.Log("Settings"));
+                button.onClick.AddListener(() => GameManager.instance.OpenSettings());
             else if (button.name == UINamesHelper.GetName(UIName.QuitGameText))
-                button.onClick.AddListener(() => Debug.Log("Quitting the game..."));
+                button.onClick.AddListener(() => Application.Quit());
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }

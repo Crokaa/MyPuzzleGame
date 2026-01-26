@@ -3,7 +3,6 @@ using UnityEngine.UI;
 
 public class InGameUI : MonoBehaviour
 {
-
     void Awake()
     {
         SetOnPauseButtons();
@@ -21,7 +20,7 @@ public class InGameUI : MonoBehaviour
             if (button.name == UINamesHelper.GetName(UIName.ContinueText))
                 button.onClick.AddListener(() => GameManager.instance.PauseUnpause());
             else if (button.name == UINamesHelper.GetName(UIName.SettingsText))
-                button.onClick.AddListener(() => Debug.Log("Settings"));
+                button.onClick.AddListener(() => GameManager.instance.OpenSettings());
             else if (button.name == UINamesHelper.GetName(UIName.QuitToMenuText))
                 button.onClick.AddListener(() => GameManager.instance.GoToMenu());
         }

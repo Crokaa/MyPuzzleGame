@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [Header("Canvas")]
     [SerializeField] private GameObject _inGameCanvas;
     [SerializeField] private GameObject _pauseCanvas;
+    [SerializeField] private GameObject _settingsCanvas;
     private bool IsPaused
     {
         get { return _isPaused; }
@@ -47,22 +48,25 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance == null)
+        if (instance != null)
         {
             Destroy(gameObject);
-            instance = this;
+            return;
         }
 
+        instance = this;
+
+        _inputActions = new PlayerInputActions();
 
         Physics2D.gravity = new Vector2(0, -GRAVITYFORCE);
         _inGameCanvas.SetActive(false);
-        _inputActions = new PlayerInputActions();
         IsPaused = false;
     }
 
     void Start()
     {
         SceneController.instance.LoadScene(UINamesHelper.GetName(UIName.MenuScene));
+
         CurrentGameState = GameState.MenuState;
     }
 
@@ -86,9 +90,8 @@ public class GameManager : MonoBehaviour
 
     private void PauseUnpause(InputAction.CallbackContext context)
     {
-        if (context.canceled && (CurrentGameState == GameState.InGame || CurrentGameState == GameState.Pause)) return;
-
-        IsPaused = !IsPaused;
+        if (context.performed && (CurrentGameState == GameState.InGame || CurrentGameState == GameState.Pause))
+            IsPaused = !IsPaused;
     }
 
     public void PauseUnpause()
@@ -151,7 +154,12 @@ public class GameManager : MonoBehaviour
         _player.gameObject.SetActive(true);
     }
 
-    internal void GoToMenu()
+    public void OpenSettings()
+    {
+        _settingsCanvas.SetActive(true);
+    }
+
+    public void GoToMenu()
     {
         SceneController.instance.LoadScene(UINamesHelper.GetName(UIName.MenuScene));
 

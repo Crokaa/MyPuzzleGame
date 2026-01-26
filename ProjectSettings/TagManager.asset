@@ -8,6 +8,7 @@ TagManager:
   - InteractText
   - MenuCanvasTag
   - InGameCanvasTag
+  - PauseCanvasTag
   layers:
   - Default
   - TransparentFX

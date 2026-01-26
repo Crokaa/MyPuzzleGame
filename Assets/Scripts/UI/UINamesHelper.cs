@@ -10,7 +10,8 @@ public enum UIName
     StartGameText,
     ChooseLevelText,
     QuitGameText,
-    InGameCanvasTag
+    InGameCanvasTag,
+    SettingsCanvasTag
 }
 
 public static class UINamesHelper
