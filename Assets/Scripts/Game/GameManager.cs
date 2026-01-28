@@ -5,7 +5,7 @@ using System;
 
 public class GameManager : MonoBehaviour
 {
-    private enum GameState { MenuState, InGame, Pause }; // if needed these will be public
+    private enum GameState { MenuState, ChangeSettings, InGame, Pause }; // if needed these will be public
 
     [Header("Player")]
     [SerializeField] private PlayerController _player;
@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviour
         set
         {
             _isPaused = value;
+            previousGameState = CurrentGameState;
+
             if (IsPaused)
             {
                 Time.timeScale = 0f;
@@ -36,6 +38,7 @@ public class GameManager : MonoBehaviour
 
     private PlayerInputActions _inputActions;
     private GameState CurrentGameState { get; set; }
+    private GameState previousGameState;
 
     private static readonly float GRAVITYFORCE = 9.8f; // Positive value, but force will be down (negative)
     public Vector2 Gravity
@@ -74,24 +77,27 @@ public class GameManager : MonoBehaviour
     {
         _inputActions.Enable();
 
-        _inputActions.Game.Pause.performed += PauseUnpause;
+        _inputActions.Game.Pause.performed += PauseOrCancel;
 
-        _inputActions.Game.Pause.canceled += PauseUnpause;
+        _inputActions.Game.Pause.canceled += PauseOrCancel;
     }
 
     void OnDisable()
     {
         _inputActions.Disable();
 
-        _inputActions.Game.Pause.performed -= PauseUnpause;
+        _inputActions.Game.Pause.performed -= PauseOrCancel;
 
-        _inputActions.Game.Pause.canceled -= PauseUnpause;
+        _inputActions.Game.Pause.canceled -= PauseOrCancel;
     }
 
-    private void PauseUnpause(InputAction.CallbackContext context)
+    private void PauseOrCancel(InputAction.CallbackContext context)
     {
         if (context.performed && (CurrentGameState == GameState.InGame || CurrentGameState == GameState.Pause))
-            IsPaused = !IsPaused;
+            PauseUnpause();
+
+        if (context.performed && CurrentGameState == GameState.ChangeSettings)
+            CloseSettings();
     }
 
     public void PauseUnpause()
@@ -117,7 +123,7 @@ public class GameManager : MonoBehaviour
 
         foreach (Transform child in _inGameCanvas.transform)
         {
-            if (child.CompareTag("InteractText"))
+            if (child.name == UINamesHelper.GetName(UIName.InteractText))
             {
                 child.gameObject.SetActive(true);
                 break;
@@ -135,7 +141,7 @@ public class GameManager : MonoBehaviour
         {
             foreach (Transform child in _inGameCanvas.transform)
             {
-                if (child.CompareTag("InteractText"))
+                if (child.name == UINamesHelper.GetName(UIName.InteractText))
                 {
                     child.gameObject.SetActive(false);
                     break;
@@ -157,6 +163,17 @@ public class GameManager : MonoBehaviour
     public void OpenSettings()
     {
         _settingsCanvas.SetActive(true);
+        previousGameState = CurrentGameState;
+        CurrentGameState = GameState.ChangeSettings;
+    }
+
+    public void CloseSettings()
+    {
+        _settingsCanvas.SetActive(false);
+        CurrentGameState = previousGameState;
+
+        // This doesn't really matter, but just for the sake of it
+        previousGameState = GameState.ChangeSettings;
     }
 
     public void GoToMenu()

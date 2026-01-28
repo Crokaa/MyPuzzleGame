@@ -5,10 +5,6 @@ TagManager:
   serializedVersion: 3
   tags:
   - GunPivot
-  - InteractText
-  - MenuCanvasTag
-  - InGameCanvasTag
-  - PauseCanvasTag
   layers:
   - Default
   - TransparentFX

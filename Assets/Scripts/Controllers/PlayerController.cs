@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     private PlayerInputActions _playerInputActions;
     private LayerMask _initialExcludeLayerMask;
     private Rigidbody2D _rb;
-    private float _moveHorizontal;
+    private float _moveHorizontal = 0.0f;
     private bool IsMoving
     {
         set
@@ -103,21 +103,9 @@ public class PlayerController : MonoBehaviour
     private void MovePlayer(InputAction.CallbackContext context)
     {
         _moveHorizontal = context.ReadValue<Vector2>().x;
-        if (context.performed)
-        {
-            transform.localScale = new Vector3(Math.Sign(_moveHorizontal) * Math.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-
-            // There must be a cleaner way of doing this, for now it works
-            GameObject gunPivotObject = GameObject.FindGameObjectWithTag("GunPivot");
-            Vector2 gunPivotLocalScale = gunPivotObject.transform.localScale;
-
-            gunPivotObject.transform.localScale = new Vector2(Math.Sign(_moveHorizontal) * Math.Abs(gunPivotLocalScale.x), gunPivotLocalScale.y);
-
-        }
-        else
-        {
+        if (!context.performed)
             IsMoving = false;
-        }
+
     }
     private void PlayerJump(InputAction.CallbackContext context)
     {
@@ -191,11 +179,33 @@ public class PlayerController : MonoBehaviour
         _pushableBox.StopPush();
     }
 
+    void Update()
+    {
+        if (Time.timeScale == 0) return;
+
+        TurnPlayer();
+    }
+
     void FixedUpdate()
     {
         HandlePush();
         HandleMoveSide();
         HandleJump();
+    }
+
+    private void TurnPlayer()
+    {
+        if (_moveHorizontal != 0.0f)
+        {
+            transform.localScale = new Vector3(Math.Sign(_moveHorizontal) * Math.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+
+            // There must be a cleaner way of doing this, for now it works
+            GameObject gunPivotObject = GameObject.FindGameObjectWithTag("GunPivot");
+            Vector2 gunPivotLocalScale = gunPivotObject.transform.localScale;
+
+            gunPivotObject.transform.localScale = new Vector2(Math.Sign(_moveHorizontal) * Math.Abs(gunPivotLocalScale.x), gunPivotLocalScale.y);
+
+        }
     }
 
     private bool IsGravityUpDown()

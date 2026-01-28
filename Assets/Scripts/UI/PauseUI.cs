@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InGameUI : MonoBehaviour
+public class PauseUI : MonoBehaviour
 {
     void Awake()
     {
@@ -11,9 +11,7 @@ public class InGameUI : MonoBehaviour
     private void SetOnPauseButtons()
     {
 
-        GameObject inGameCanvas = GameObject.FindGameObjectWithTag(UINamesHelper.GetName(UIName.InGameCanvasTag));
-
-        Button[] buttons = inGameCanvas.GetComponentsInChildren<Button>(true);
+        Button[] buttons = GetComponentsInChildren<Button>(true);
         foreach (Button button in buttons)
         {
             button.navigation = new Navigation { mode = Navigation.Mode.None };
