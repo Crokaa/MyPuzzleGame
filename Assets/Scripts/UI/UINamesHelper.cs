@@ -1,19 +1,26 @@
 
 public enum UIName
 {
+    // Texts
+
     ContinueText,
     QuitToMenuText,
     SettingsText,
-    MenuScene,
-    TestLevelScene,
-    MenuCanvasTag,
     StartGameText,
     ChooseLevelText,
     QuitGameText,
-    InGameCanvasTag,
-    SettingsCanvasTag,
     BackText,
-    InteractText
+    InteractText,
+
+    // Scenes
+
+    MenuScene,
+    TestLevelScene,
+
+    // Tags
+
+    MenuCanvasTag
+
 }
 
 public static class UINamesHelper

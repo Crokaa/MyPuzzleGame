@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MainMenuUI : MonoBehaviour
 {
+
+    [SerializeField] GameObject _menuOptions;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -12,9 +15,7 @@ public class MainMenuUI : MonoBehaviour
 
     private void SetMenuCanvas()
     {
-        GameObject menuCanvas = GameObject.FindGameObjectWithTag(UINamesHelper.GetName(UIName.MenuCanvasTag));
-
-        Button[] menuButtons = menuCanvas.GetComponentsInChildren<Button>();
+        Button[] menuButtons = _menuOptions.GetComponentsInChildren<Button>();
         foreach (Button button in menuButtons)
         {
             button.navigation = new Navigation { mode = Navigation.Mode.None };
@@ -32,5 +33,15 @@ public class MainMenuUI : MonoBehaviour
             else if (button.name == UINamesHelper.GetName(UIName.QuitGameText))
                 button.onClick.AddListener(() => Application.Quit());
         }
+    }
+
+    public void ShowMenuButtons()
+    {
+        _menuOptions.SetActive(true);
+    }
+
+    public void HideMenuButtons()
+    {
+        _menuOptions.SetActive(false);
     }
 }

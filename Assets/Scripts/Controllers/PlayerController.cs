@@ -11,7 +11,6 @@ public class PlayerController : MonoBehaviour
     [Header("Damping")]
     [SerializeField] private float _moveDamp;
     [SerializeField] private float _stopDamp;
-    private static readonly float FLOATPRECISION = 0.000001f;
     private PlayerInputActions _playerInputActions;
     private LayerMask _initialExcludeLayerMask;
     private Rigidbody2D _rb;
@@ -103,6 +102,7 @@ public class PlayerController : MonoBehaviour
     private void MovePlayer(InputAction.CallbackContext context)
     {
         _moveHorizontal = context.ReadValue<Vector2>().x;
+
         if (!context.performed)
             IsMoving = false;
 
@@ -210,7 +210,12 @@ public class PlayerController : MonoBehaviour
 
     private bool IsGravityUpDown()
     {
-        return -FLOATPRECISION <= transform.right.y && transform.right.y <= FLOATPRECISION;
+        return GameManager.instance.Gravity.x == 0f;
+    }
+
+    private bool IsGravityUpsideDown()
+    {
+        return GameManager.instance.Gravity.x == 0f && GameManager.instance.Gravity.y > 0;
     }
 
     private void HandlePush()
@@ -241,7 +246,12 @@ public class PlayerController : MonoBehaviour
         if (_moveHorizontal != 0)
         {
             if (IsGravityUpDown())
-                _rb.linearVelocity = new Vector2(_moveHorizontal * _currentSpeed * transform.right.x, _rb.linearVelocity.y);
+            {
+                if (IsGravityUpsideDown())
+                    _rb.linearVelocity = new Vector2(_moveHorizontal * _currentSpeed * -transform.right.x, _rb.linearVelocity.y);
+                else
+                    _rb.linearVelocity = new Vector2(_moveHorizontal * _currentSpeed * transform.right.x, _rb.linearVelocity.y);
+            }
             else
                 _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _moveHorizontal * _currentSpeed * transform.right.y);
 

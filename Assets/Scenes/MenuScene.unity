@@ -1133,7 +1133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c051523b8eea08244ab6c2cc8fd01470, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuUI
-  _settingsCanvas: {fileID: 4701380366482184475, guid: d751b1043dac95b4b84cbd1f2dabc31e, type: 3}
+  _menuOptions: {fileID: 1547198271390687673}
 --- !u!1 &8815496043373026045
 GameObject:
   m_ObjectHideFlags: 0

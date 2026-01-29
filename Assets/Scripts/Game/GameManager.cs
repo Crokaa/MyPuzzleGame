@@ -2,6 +2,7 @@ using UnityEngine.InputSystem;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using UnityEditor;
 
 public class GameManager : MonoBehaviour
 {
@@ -162,6 +163,13 @@ public class GameManager : MonoBehaviour
 
     public void OpenSettings()
     {
+
+        if (CurrentGameState == GameState.MenuState)
+            HideMenu();
+        else if (CurrentGameState == GameState.Pause)
+            HidePause();
+
+
         _settingsCanvas.SetActive(true);
         previousGameState = CurrentGameState;
         CurrentGameState = GameState.ChangeSettings;
@@ -169,12 +177,45 @@ public class GameManager : MonoBehaviour
 
     public void CloseSettings()
     {
+
+        if (previousGameState == GameState.MenuState)
+            ShowMenu();
+        else if (previousGameState == GameState.Pause)
+            ShowPause();
+
         _settingsCanvas.SetActive(false);
         CurrentGameState = previousGameState;
 
         // This doesn't really matter, but just for the sake of it
         previousGameState = GameState.ChangeSettings;
     }
+
+    private void ShowPause()
+    {
+        _pauseCanvas.SetActive(true);
+    }
+
+    private void HidePause()
+    {
+        _pauseCanvas.SetActive(false);
+    }
+
+    private void ShowMenu()
+    {
+        GameObject menuCanvas = GameObject.FindGameObjectWithTag(UINamesHelper.GetName(UIName.MenuCanvasTag));
+        MainMenuUI mainMenu = menuCanvas.GetComponent<MainMenuUI>();
+
+        mainMenu.ShowMenuButtons();
+    }
+
+    private void HideMenu()
+    {
+        GameObject menuCanvas = GameObject.FindGameObjectWithTag(UINamesHelper.GetName(UIName.MenuCanvasTag));
+        MainMenuUI mainMenu = menuCanvas.GetComponent<MainMenuUI>();
+
+        mainMenu.HideMenuButtons();
+    }
+
 
     public void GoToMenu()
     {
