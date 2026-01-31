@@ -56,11 +56,19 @@ public class PlayerController : MonoBehaviour
     private bool _isMoving;
     private bool _isGrounded;
     private bool _jump;
+    public static PlayerController instance;
     void Awake()
     {
-        _rb = GetComponent<Rigidbody2D>();
-        _initialExcludeLayerMask = GetComponent<BoxCollider2D>().excludeLayers;
-        _playerInputActions = new PlayerInputActions();
+
+        if (instance == null)
+        {
+            instance = this;
+            _rb = GetComponent<Rigidbody2D>();
+            _initialExcludeLayerMask = GetComponent<BoxCollider2D>().excludeLayers;
+            _playerInputActions = new PlayerInputActions();
+        }
+        else
+            Destroy(gameObject);
     }
 
     void Start()

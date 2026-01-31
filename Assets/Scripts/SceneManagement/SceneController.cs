@@ -5,8 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class SceneController : MonoBehaviour
 {
-
     public static SceneController instance;
+    [SerializeField] Animator transitionAnim;
 
     private void Awake()
     {
@@ -16,14 +16,24 @@ public class SceneController : MonoBehaviour
 
     public void LoadScene(string sceneName)
     {
-        StartCoroutine(AsyncLoadScene(sceneName));
+        SceneManager.LoadScene(sceneName);
 
     }
 
-    private IEnumerator AsyncLoadScene(string sceneName)
+    public void LoadSceneTransition(string sceneName)
     {
+        StartCoroutine(LoadSceneAsyncTransition(sceneName));
 
-        SceneManager.LoadSceneAsync(sceneName);
+    }
+
+    private IEnumerator LoadSceneAsyncTransition(string sceneName)
+    {
+        transitionAnim.gameObject.SetActive(true);
+        transitionAnim.SetTrigger("End");
         yield return new WaitForSeconds(1);
+        SceneManager.LoadSceneAsync(sceneName);
+        transitionAnim.SetTrigger("Start");
+        yield return new WaitForSeconds(1);
+        transitionAnim.gameObject.SetActive(false);
     }
 }

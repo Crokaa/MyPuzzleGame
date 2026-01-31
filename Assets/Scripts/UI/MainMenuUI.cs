@@ -24,6 +24,7 @@ public class MainMenuUI : MonoBehaviour
                 {
                     // This will be changed but for now it works
                     GameManager.instance.StartGame();
+                    GetComponent<Canvas>().sortingOrder = -1;
 
                 });
             else if (button.name == UINamesHelper.GetName(UIName.ChooseLevelText))

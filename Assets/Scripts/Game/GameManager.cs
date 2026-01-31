@@ -8,8 +8,6 @@ public class GameManager : MonoBehaviour
 {
     private enum GameState { MenuState, ChangeSettings, InGame, Pause }; // if needed these will be public
 
-    [Header("Player")]
-    [SerializeField] private PlayerController _player;
     [Header("Canvas")]
     [SerializeField] private GameObject _inGameCanvas;
     [SerializeField] private GameObject _pauseCanvas;
@@ -113,7 +111,7 @@ public class GameManager : MonoBehaviour
         // Rotate the player
         Vector2 targetVector = Vector2.Perpendicular(currentForce);
         float angle = Vector2.SignedAngle(Vector2.right, targetVector);
-        _player.Rotate(angle);
+        PlayerController.instance.Rotate(angle);
     }
     public void InteractShow()
     {
@@ -157,8 +155,7 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         CurrentGameState = GameState.InGame;
-        SceneController.instance.LoadScene(UINamesHelper.GetName(UIName.TestLevelScene));
-        _player.gameObject.SetActive(true);
+        SceneController.instance.LoadSceneTransition(UINamesHelper.GetName(UIName.TestLevelScene));
     }
 
     public void OpenSettings()
@@ -219,13 +216,11 @@ public class GameManager : MonoBehaviour
 
     public void GoToMenu()
     {
-        SceneController.instance.LoadScene(UINamesHelper.GetName(UIName.MenuScene));
+        SceneController.instance.LoadSceneTransition(UINamesHelper.GetName(UIName.MenuScene));
 
         // In case somehow the game goes to the menu without being from pauses (probably will be possible)
         if (IsPaused)
             IsPaused = !IsPaused;
-
-        _player.gameObject.SetActive(false);
 
         CurrentGameState = GameState.MenuState;
     }
