@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _inGameCanvas;
     [SerializeField] private GameObject _pauseCanvas;
     [SerializeField] private GameObject _settingsCanvas;
+    [SerializeField] private GameObject _fadeBackgroundCanvas;
     private bool IsPaused
     {
         get { return _isPaused; }
@@ -24,11 +25,13 @@ public class GameManager : MonoBehaviour
             {
                 Time.timeScale = 0f;
                 _pauseCanvas.SetActive(true);
+                _fadeBackgroundCanvas.SetActive(true);
                 CurrentGameState = GameState.Pause;
             }
             else
             {
                 _pauseCanvas.SetActive(false);
+                _fadeBackgroundCanvas.SetActive(false);
                 Time.timeScale = 1f;
                 CurrentGameState = GameState.InGame;
             }
@@ -202,6 +205,7 @@ public class GameManager : MonoBehaviour
         GameObject menuCanvas = GameObject.FindGameObjectWithTag(UINamesHelper.GetName(UIName.MenuCanvasTag));
         MainMenuUI mainMenu = menuCanvas.GetComponent<MainMenuUI>();
 
+        _fadeBackgroundCanvas.SetActive(false);
         mainMenu.ShowMenuButtons();
     }
 
@@ -211,6 +215,7 @@ public class GameManager : MonoBehaviour
         MainMenuUI mainMenu = menuCanvas.GetComponent<MainMenuUI>();
 
         mainMenu.HideMenuButtons();
+        _fadeBackgroundCanvas.SetActive(true);
     }
 
 

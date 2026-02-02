@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -39,7 +40,10 @@ public class PlayerController : MonoBehaviour
             else
                 _rb.linearDamping = _stopDamp;
 
-            if (_isGrounded && _canPush)
+            if (_wasPushing)
+                _push = true;
+
+            if (_isGrounded && _pushableBox != null)
                 GameManager.instance.InteractShow();
             else if (!_isGrounded)
                 GameManager.instance.InteractHide();
@@ -51,11 +55,11 @@ public class PlayerController : MonoBehaviour
 
     private PushableObject _pushableBox;
     private float _currentSpeed;
-    private bool _canPush;
     private bool _push;
     private bool _isMoving;
     private bool _isGrounded;
     private bool _jump;
+    private bool _wasPushing;
     public static PlayerController instance;
     void Awake()
     {
@@ -77,8 +81,8 @@ public class PlayerController : MonoBehaviour
         IsGrounded = false;
         _jump = false;
         IsMoving = false;
-        _canPush = false;
         _push = false;
+        _wasPushing = false;
     }
 
     void OnEnable()
@@ -122,18 +126,25 @@ public class PlayerController : MonoBehaviour
         if (IsGrounded)
         {
             _jump = true;
+
+            if (_push)
+                _wasPushing = true;
+
             _push = false;
         }
     }
 
     private void PlayerPush(InputAction.CallbackContext context)
     {
-        if (!_canPush || !IsGrounded) return;
+        //if (!_canPush || !IsGrounded) return;
 
         if (context.performed)
             _push = true;
         else
+        {
             StopPush();
+            _push = false;
+        }
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -151,7 +162,6 @@ public class PlayerController : MonoBehaviour
                 GameManager.instance.InteractShow();
 
             _pushableBox = collision.GetComponentInParent<PushableObject>();
-            _canPush = true;
         }
     }
 
@@ -174,7 +184,6 @@ public class PlayerController : MonoBehaviour
         {
             GameManager.instance.InteractHide();
             StopPush();
-            _canPush = false;
             _pushableBox = null;
         }
     }
@@ -182,9 +191,9 @@ public class PlayerController : MonoBehaviour
     private void StopPush()
     {
         _currentSpeed = _moveSpeed;
-        _push = false;
 
-        _pushableBox.StopPush();
+        if (_pushableBox != null)
+            _pushableBox.StopPush();
     }
 
     void Update()
@@ -229,6 +238,12 @@ public class PlayerController : MonoBehaviour
     private void HandlePush()
     {
         if (_pushableBox == null || !_push) return;
+
+        if (_moveHorizontal == 0)
+        {
+            _pushableBox.StopPush();
+            return;
+        }
 
 
         Vector2 boxCenter = _pushableBox.transform.position;
