@@ -40,12 +40,16 @@ public class PlayerController : MonoBehaviour
             else
                 _rb.linearDamping = _stopDamp;
 
-            if (_wasPushing)
+            if (_isGrounded && _wasPushing)
                 _push = true;
-
+            else if (!_isGrounded)
+            {
+                _push = false;
+                _jump = false;
+            }
             if (_isGrounded && _pushableBox != null)
                 GameManager.instance.InteractShow();
-            else if (!_isGrounded)
+            else if (!_isGrounded && _pushableBox != null)
                 GameManager.instance.InteractHide();
 
         }
@@ -168,17 +172,11 @@ public class PlayerController : MonoBehaviour
     void OnTriggerExit2D(Collider2D collision)
     {
         if ((GameLayers.instance.JumpableLayers & (1 << collision.gameObject.layer)) != 0)
-        {
             IsGrounded = false;
-            _jump = false;
-        }
 
         if ((GameLayers.instance.ColorRestrictiveJumpLayer & (1 << collision.gameObject.layer)) != 0 &&
         collision.GetComponent<SpriteRenderer>().color != GetComponent<SpriteRenderer>().color)
-        {
             IsGrounded = false;
-            _jump = false;
-        }
 
         if ((GameLayers.instance.InteractableLayer & (1 << collision.gameObject.layer)) != 0 && _pushableBox != null)
         {
